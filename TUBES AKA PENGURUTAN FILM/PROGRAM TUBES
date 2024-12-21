@@ -1,0 +1,116 @@
+import matplotlib.pyplot as plt
+import time
+
+# Data film Netflix
+movies = [
+    {"title": "Agak Laen", "viewers": 3400000},
+    {"title": "13 Bombs", "viewers": 2400000},
+    {"title": "The Big 4", "viewers": 2200000},
+    {"title": "Indigo", "viewers": 2000000},
+    {"title": "The Haunted Hotel", "viewers": 2100000}
+]
+
+# Implementasi algoritma Merge Sort
+def merge_sort(data, key):
+    if len(data) > 1:
+        mid = len(data) // 2
+        left_half = data[:mid]
+        right_half = data[mid:]
+
+        merge_sort(left_half, key)
+        merge_sort(right_half, key)
+
+        i, j, k = 0, 0, 0
+
+        while i < len(left_half) and j < len(right_half):
+            if left_half[i][key] > right_half[j][key]:  # Sorting in descending order
+                data[k] = left_half[i]
+                i += 1
+            else:
+                data[k] = right_half[j]
+                j += 1
+            k += 1
+
+        while i < len(left_half):
+            data[k] = left_half[i]
+            i += 1
+            k += 1
+
+        while j < len(right_half):
+            data[k] = right_half[j]
+            j += 1
+            k += 1
+
+# Fungsi untuk mengukur waktu eksekusi Merge Sort
+def measure_time():
+    dataset_sizes = [1, 10, 20, 50, 100, 200, 500, 1000]
+    best_case_times = []
+    worst_case_times = []
+
+    for size in dataset_sizes:
+        # Membuat dataset
+        dataset = [{"title": f"Film {i}", "viewers": i} for i in range(size)]
+        
+        # Best Case (sudah terurut menurun)
+        start_time = time.time()
+        merge_sort(dataset, "viewers")
+        best_case_times.append(time.time() - start_time)
+
+        # Worst Case (terurut menaik)
+        dataset.reverse()
+        start_time = time.time()
+        merge_sort(dataset, "viewers")
+        worst_case_times.append(time.time() - start_time)
+
+    return dataset_sizes, best_case_times, worst_case_times
+
+# Fungsi utama untuk menjalankan program
+def main():
+    # Mengurutkan data film berdasarkan jumlah penonton
+    merge_sort(movies, "viewers")
+
+    # Menampilkan hasil pengurutan
+    print("Film Netflix berdasarkan jumlah penonton (terbanyak hingga tersedikit):")
+    for movie in movies:
+        print(f"{movie['title']}: {movie['viewers']} penonton")
+
+    # Membuat grafik jumlah penonton
+    movie_titles = [movie['title'] for movie in movies]
+    movie_viewers = [movie['viewers'] for movie in movies]
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(movie_titles, movie_viewers, color='skyblue')
+    plt.xlabel('Judul Film')
+    plt.ylabel('Jumlah Penonton')
+    plt.title('Film Netflix dengan Penonton Terbanyak')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+    # Mengukur waktu eksekusi Merge Sort
+    dataset_sizes, best_case_times, worst_case_times = measure_time()
+
+    # Membuat tabel kinerja
+    print("\nTabel Perbandingan Kinerja Merge Sort:")
+    print("+------+-------------------+-------------------+")
+    print("|  n   | Best Case Time (s) | Worst Case Time (s) |")
+    print("+------+-------------------+-------------------+")
+    for i in range(len(dataset_sizes)):
+        print(f"| {dataset_sizes[i]:<4} | {best_case_times[i]:<17.8f} | {worst_case_times[i]:<17.8f} |")
+    print("+------+-------------------+-------------------+")
+
+    # Membuat grafik kinerja Merge Sort
+    plt.figure(figsize=(10, 6))
+    plt.plot(dataset_sizes, best_case_times, marker='o', label='Best Case')
+    plt.plot(dataset_sizes, worst_case_times, marker='o', label='Worst Case')
+    plt.xlabel('Ukuran Dataset (n)')
+    plt.ylabel('Waktu Eksekusi (detik)')
+    plt.title('Perbandingan Kinerja Merge Sort')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+# Menjalankan fungsi utama jika file dieksekusi langsung
+if __name__ == "__main__":
+    main()
+
